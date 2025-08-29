@@ -1,0 +1,40 @@
+### Deployment
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: payment
+  namespace: roboshop
+  labels:
+    component: payment
+    project: roboshop
+    tier: app
+spec:
+  selector:
+    matchLabels:
+      component: payment
+      project: roboshop
+      tier: app
+  replicas: 2
+  ### This is Pod definiton
+  template:
+    metadata:
+      name: payment
+      labels:
+        component: payment
+        project: roboshop
+        tier: app
+    spec:
+      containers:
+      - name: payment
+        image: {{ .Values.deployment.imageURL }}:{{ .Values.deployment.imageVersion }}
+        #command: ["sh", "-c", "echo 'failure' && exit 1"]
+        envFrom:
+        - configMapRef:
+            name: payment
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi
